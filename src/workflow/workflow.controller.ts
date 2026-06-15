@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, HttpCode, HttpStatus } from '@nestjs/common';
 import { WorkflowService } from './workflow.service';
 import { CreateWorkflowDto } from './dto/create-workflow.dto';
+import { UpdateWorkflowDto } from './dto/update-workflow.dto';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -32,12 +33,13 @@ export class WorkflowController {
   }
 
   @Patch(':id') // handle PATCH /workflow/:id — update sebagian field
-  update(@Param('id') id: string, @Body() dto: Partial<CreateWorkflowDto>, @Req() req: any) {
+  update(@Param('id') id: string, @Body() dto: UpdateWorkflowDto, @Req() req: any) {
     // Partial<CreateWorkflowDto> = semua field opsional, tidak harus kirim semua field
     return this.workflowService.update(req.user.id, id, dto);
   }
 
   @Delete(':id') // handle DELETE /workflow/:id
+  @HttpCode(HttpStatus.NO_CONTENT) //return 204 code instead 200
   remove(@Param('id') id: string, @Req() req: any) {
     return this.workflowService.remove(req.user.id, id);
   }
