@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum JobStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  DEAD
+}
+
+enum TriggerType {
+  MANUAL
+  SCHEDULED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  workflows Workflow[]
+}
+
+model Workflow {
+  id          String      @id @default(uuid())
+  name        String
+  description String?
+  triggerType TriggerType @default(MANUAL)
+  cronExpr    String?     // diisi kalau triggerType SCHEDULED, contoh: "0 9 * * *"
+  steps       Json        // definisi steps dinamis
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  jobs Job[]
+}
+
+model Job {
+  id          String    @id @default(uuid())
+  status      JobStatus @default(PENDING)
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  workflowId String
+  workflow   Workflow @relation(fields: [workflowId], references: [id])
+
+  steps JobStep[]
+}
+
+model JobStep {
+  id          String    @id @default(uuid())
+  stepIndex   Int
+  stepName    String
+  status      JobStatus @default(PENDING)
+  input       Json?
+  output      Json?
+  error       String?
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  jobId String
+  job   Job    @relation(fields: [jobId], references: [id])
+}
