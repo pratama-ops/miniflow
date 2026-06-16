@@ -23,6 +23,7 @@ model User {
   id        String   @id @default(uuid())
   email     String   @unique
   password  String
+  jobQuota  Int      @default(5) // maksimal job aktif sekaligus per user
   createdAt DateTime @default(now())
 
   workflows Workflow[]
