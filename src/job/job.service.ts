@@ -29,10 +29,12 @@ export class JobService {
     //ambil semua workflowId milik user
     const useWorkflow = await this.prisma.workflow.findMany({
       where: { userId },
-      select: { id: true },
+      select: { id: true }, // pilih field saja, outputnya berupa id [{ id }]
     });
 
-    const workflowId = useWorkflow.map((w) => w.id)
+    // mengubah array object jadi array of string
+    // hasilnya array of object karena hasil dari query findMany (findMany selalu mengembalikan array)
+    const workflowId = useWorkflow.map((w) => w.id) 
 
     // hitung job aktif berdasarkan workflowId
     const activeJobs = await this.prisma.job.count({
