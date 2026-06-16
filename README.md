@@ -3,25 +3,29 @@
 A distributed workflow execution engine built with NestJS, BullMQ, and PostgreSQL. Designed to handle background job execution at scale with real-time observability.
 
 ## Architecture
-┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+## Architecture
 
-│   REST API      │────▶│   Redis Queue    │────▶│   Worker        │
-
-│   (NestJS)      │     │   (BullMQ)       │     │   (Processor)   │
-
-└─────────────────┘     └──────────────────┘     └─────────────────┘
-
-│                                                 │
-
-▼                                                 ▼
-
-┌─────────────────┐                             ┌─────────────────┐
-
-│   PostgreSQL    │◀────────────────────────────│   Job Status    │
-
-│   (Prisma)      │                             │   Tracking      │
-
-└─────────────────┘                             └─────────────────┘
+```mermaid
+flowchart TD
+    Client["Client\n(Swagger / API Consumer)"]
+    
+    Client -->|HTTP Request| API["REST API\n(NestJS)"]
+    
+    API -->|Authenticate| Auth["Auth Module\n(JWT + Passport)"]
+    API -->|CRUD| WorkflowModule["Workflow Module\n(PostgreSQL via Prisma)"]
+    API -->|Trigger Job| JobService["Job Service"]
+    
+    JobService -->|Create Job Record| DB[("PostgreSQL\n(Prisma)")]
+    JobService -->|Push to Queue| Queue["Redis Queue\n(BullMQ)"]
+    
+    Queue -->|Consume Job| Worker["Job Processor\n(Worker)"]
+    
+    Worker -->|Execute Steps| Steps["Step Execution\n(http / email / transform)"]
+    Worker -->|Update Status| DB
+    
+    API -->|Monitor| BullBoard["Bull Board\nDashboard"]
+    BullBoard -->|Read Queue State| Queue
+```
 
 ## Features
 
@@ -106,7 +110,7 @@ docker compose up -d
 Once running, visit:
 
 - **Swagger UI** — `http://localhost:3000/docs`
-- **Bull Board** — `http://localhost:3000/queues`
+- **Bull Board** — `http://localhost:3000/queue`
 
 ## API Overview
 
