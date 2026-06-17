@@ -47,7 +47,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, //(strip field yg ada di dto secara otomatis)
     forbidNonWhitelisted: true, //(kalau ada field asing langsung error 400) || eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NzJlMjM1Yi0yM2VmLTRlZDctYTllMy1jNDEyMWQ3ZTBmNjgiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3ODE0OTE5MjUsImV4cCI6MTc4MjA5NjcyNX0.csAUWB4ekn6meXp2gc65G2YJHK0n8NnKtI2S0RXs74A
-    transform: true //(otomatis convert data sesuai dto)
+    transform: true, //(otomatis convert data sesuai dto)
+    disableErrorMessages: true,
   }));
   await app.listen(process.env.PORT ?? 3000);
 }
