@@ -3,7 +3,6 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { PrismaService } from '../prisma/prisma.service';
 import { TriggerJobDto } from './dto/trigger-job.dto';
-import { threadCpuUsage } from 'process';
 
 @Injectable()
 export class JobService {
